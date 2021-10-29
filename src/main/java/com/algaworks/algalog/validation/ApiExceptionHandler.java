@@ -13,8 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.algaworks.algalog.domain.exception.NegocioException;
-import com.algaworks.algalog.domain.model.Cliente;
+import com.algaworks.algalog.exception.NegocioException;
 
 import lombok.AllArgsConstructor;
 

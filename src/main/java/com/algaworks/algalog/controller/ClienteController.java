@@ -1,6 +1,5 @@
 package com.algaworks.algalog.controller;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,11 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.algaworks.algalog.domain.model.Cliente;
-import com.algaworks.algalog.repository.ClienteRepository;
-import com.algaworks.algalog.service.ClienteService;
+import com.algaworks.algalog.domain.Cliente;
+import com.algaworks.algalog.domain.dto.request.ClienteRequest;
+import com.algaworks.algalog.domain.dto.response.ClienteResponse;
+import com.algaworks.algalog.service.implementation.ClienteServiceImp;
 
 import lombok.AllArgsConstructor;
 
@@ -27,67 +26,35 @@ import lombok.AllArgsConstructor;
 @RequestMapping(path = "clientes")
 public class ClienteController {
 	
-	private ClienteRepository clienteRepository;
-	private ClienteService clienteService;
+	private ClienteServiceImp clienteService;
 	
 	@GetMapping
-	public ResponseEntity<List<Cliente>> listar() {
-		List<Cliente> clientes = clienteRepository.findAll();
-		
-		if (clientes.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		return ResponseEntity.ok(clientes);
+	public ResponseEntity<List<ClienteResponse>> listar() {
+		return clienteService.listar();
 		
 	}
 	
 	@GetMapping(path = "{clienteId}")
-	public ResponseEntity<Cliente> buscar(@PathVariable Long clienteId) {
-		
-		return clienteRepository.findById(clienteId)
-				.map(cliente -> ResponseEntity.ok(cliente))
-				.orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<ClienteResponse> buscar(@PathVariable Long clienteId) {
+		return clienteService.buscar(clienteId);
 				
 	}
 	
 	@PostMapping
-	public ResponseEntity<Cliente> adicionar(@Valid @RequestBody Cliente cliente) {
-		
-		clienteService.salvar(cliente);
-		
-		URI local = ServletUriComponentsBuilder
-				.fromCurrentRequest().path("{clienteId}")
-				.buildAndExpand(cliente.getId()).toUri();
-		
-		return ResponseEntity.created(local).body(cliente);
+	public ResponseEntity<ClienteResponse> adicionar(@Valid @RequestBody ClienteRequest cliente) {
+		return clienteService.adicionar(cliente);
 	}
 	
 	@PutMapping(path = "{clienteId}")
-	public ResponseEntity<Cliente> atualizar(@Valid @PathVariable Long clienteId, @RequestBody Cliente cliente) {
-		
-		if (!clienteRepository.existsById(clienteId)) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		cliente.setId(clienteId);
-		
-		cliente = clienteService.salvar(cliente);
-		
-		return ResponseEntity.ok(cliente);
+	public ResponseEntity<ClienteResponse> atualizar(@Valid @PathVariable Long clienteId, @RequestBody Cliente cliente) {
+		return clienteService.atualizar(clienteId, cliente);
 		
 	}
 	
 	@DeleteMapping(path = "{clienteId}")
 	public ResponseEntity<Void> excluir(@PathVariable Long clienteId) {
+		return clienteService.excluir(clienteId);
 		
-		if (!clienteRepository.existsById(clienteId)) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		clienteService.exluir(clienteId);
-		
-		return ResponseEntity.noContent().build();
 	}
 
 }
