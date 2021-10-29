@@ -1,39 +1,22 @@
 package com.algaworks.algalog.service;
 
-import javax.transaction.Transactional;
+import java.util.List;
 
-import org.springframework.stereotype.Service;
+import javax.validation.Valid;
 
-import com.algaworks.algalog.domain.exception.NegocioException;
-import com.algaworks.algalog.domain.model.Cliente;
-import com.algaworks.algalog.repository.ClienteRepository;
+import org.springframework.http.ResponseEntity;
 
-import lombok.AllArgsConstructor;
+import com.algaworks.algalog.domain.Cliente;
+import com.algaworks.algalog.domain.dto.request.ClienteRequest;
+import com.algaworks.algalog.domain.dto.response.ClienteResponse;
 
-@AllArgsConstructor
-@Service
-public class ClienteService {
+public interface ClienteService {
 	
-	private ClienteRepository clienteRepository;
+	public ResponseEntity<List<ClienteResponse>> listar();
+	public ResponseEntity<ClienteResponse> buscar(Long clienteId);
+	public ResponseEntity<ClienteResponse> adicionar(@Valid ClienteRequest cliente);
+	public ResponseEntity<ClienteResponse> atualizar(@Valid Long clienteId, Cliente cliente);
+	public ResponseEntity<Void> excluir(Long clienteId);
 	
-	@Transactional
-	public Cliente salvar(Cliente cliente) {
-		boolean emailExistente = clienteRepository.findByEmail(cliente.getEmail())
-				.stream()
-				.anyMatch(clienteExistente -> !clienteExistente.equals(cliente));
-		
-		if (emailExistente) {
-			throw new NegocioException("Já existe esse e-mail em uso");
-		}
-		
-		return clienteRepository.save(cliente);
-	}
-	
-	@Transactional
-	public void exluir(Long clienteId) {
-		clienteRepository.deleteById(clienteId);
-	}
 
-	
-	
 }
